@@ -23,8 +23,8 @@ export class ChangelogChecker {
     const labels: string[] = await this._prService.getLabelsForCurrentPr()
     core.debug(labels.join('\n'))
     const pr = this._prService.getPr()
-    core.debug(pr.pull_request?.body ?? 'n/a')
-    core.debug(pr.pull_request?.number.toString() ?? 'n/a')
+    core.debug(pr?.body ?? 'n/a')
+    core.debug(pr?.number.toString() ?? 'n/a')
     if (
       (this._config.skipChangelogLabel?.length ?? 0) !== 0 &&
       labels.includes(this._config.skipChangelogLabel)
@@ -37,7 +37,7 @@ export class ChangelogChecker {
       status = !result ? Status.MISSING_CHANGELOG : Status.OK
     }
 
-    this._checks.createStatus(this._prService.getPr(), status)
+    this._checks.createStatus(pr, status)
     return status
   }
 }

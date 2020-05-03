@@ -25574,8 +25574,8 @@ class ChangelogChecker {
             const labels = yield this._prService.getLabelsForCurrentPr();
             core.debug(labels.join('\n'));
             const pr = this._prService.getPr();
-            core.debug((_b = (_a = pr.pull_request) === null || _a === void 0 ? void 0 : _a.body, (_b !== null && _b !== void 0 ? _b : 'n/a')));
-            core.debug((_d = (_c = pr.pull_request) === null || _c === void 0 ? void 0 : _c.number.toString(), (_d !== null && _d !== void 0 ? _d : 'n/a')));
+            core.debug((_b = (_a = pr) === null || _a === void 0 ? void 0 : _a.body, (_b !== null && _b !== void 0 ? _b : 'n/a')));
+            core.debug((_d = (_c = pr) === null || _c === void 0 ? void 0 : _c.number.toString(), (_d !== null && _d !== void 0 ? _d : 'n/a')));
             if ((_f = (_e = this._config.skipChangelogLabel) === null || _e === void 0 ? void 0 : _e.length, (_f !== null && _f !== void 0 ? _f : 0)) !== 0 &&
                 labels.includes(this._config.skipChangelogLabel)) {
                 status = checks_1.Status.MANUAL_SKIP;
@@ -25584,7 +25584,7 @@ class ChangelogChecker {
                 const result = yield this._prService.searchFile((_h = (_g = pr.pull_request) === null || _g === void 0 ? void 0 : _g.number, (_h !== null && _h !== void 0 ? _h : 0)));
                 status = !result ? checks_1.Status.MISSING_CHANGELOG : checks_1.Status.OK;
             }
-            this._checks.createStatus(this._prService.getPr(), status);
+            this._checks.createStatus(pr, status);
             return status;
         });
     }
