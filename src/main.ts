@@ -6,6 +6,7 @@ import {Status} from './util/checks'
 
 async function run(): Promise<void> {
   try {
+    core.debug('Changelog Checker')
     const changelogPattern: string = core.getInput('changelog', {
       required: true
     })

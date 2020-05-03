@@ -3524,6 +3524,7 @@ const checks_1 = __webpack_require__(335);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.debug('Changelog Checker');
             const changelogPattern = core.getInput('changelog', {
                 required: true
             });
