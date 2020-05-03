@@ -28,7 +28,9 @@ export class ChangelogChecker {
     ) {
       status = Status.MANUAL_SKIP
     } else {
-      const result = this._prService.searchFile(pr.pull_request?.number ?? 0)
+      const result = await this._prService.searchFile(
+        pr.pull_request?.number ?? 0
+      )
       status = !result ? Status.MISSING_CHANGELOG : Status.OK
     }
 

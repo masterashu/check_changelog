@@ -38,7 +38,7 @@ export class PrService {
     return Promise.all(pr.labels.map(async (it: {name: string}) => it.name))
   }
 
-  addCommentToPr(): void {
+  async addCommentToPr(): Promise<void> {
     this._octokit.issues.createComment({
       ...github.context.repo,
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -47,7 +47,7 @@ export class PrService {
     })
   }
 
-  addLabelToCurrentPr(): void {
+  async addLabelToCurrentPr(): Promise<void> {
     this._octokit.issues.addLabels({
       ...github.context.repo,
       // eslint-disable-next-line @typescript-eslint/camelcase
