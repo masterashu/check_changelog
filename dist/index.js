@@ -5210,18 +5210,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const github = __importStar(__webpack_require__(469));
 const core = __importStar(__webpack_require__(470));
 class Checks {
-    constructor(_octokit, _config) {
+    constructor(_octokit, _config, _githubContext) {
         this._octokit = _octokit;
         this._config = _config;
+        this._githubContext = _githubContext;
     }
     createStatus(pullRequest, status) {
         return __awaiter(this, void 0, void 0, function* () {
-            const headSha = pullRequest.head.sha;
+            const headSha = yield this.getHeadSha();
             const output = this.getOutput(status);
             const conclusion = this.getConclusion(status);
             const params = Object.assign(Object.assign({}, github.context.repo), { conclusion, head_sha: headSha, name: 'Changelog check', output });
             const check = yield this._octokit.checks.create(params);
             core.info(JSON.stringify(check));
+        });
+    }
+    getHeadSha() {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            const pr = yield this._octokit.pulls.get(Object.assign(Object.assign({}, this._githubContext.repo), { 
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                pull_number: (_b = (_a = this._githubContext.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number, (_b !== null && _b !== void 0 ? _b : 0)) }));
+            return pr.data.head.sha;
         });
     }
     getOutput(status) {
@@ -25642,8 +25652,8 @@ class ChangelogChecker {
     constructor(config) {
         this._config = config;
         this._octokit = new github.GitHub(config.githubToken);
-        this._checks = new checks_1.Checks(this._octokit, this._config);
         const githubContext = github.context;
+        this._checks = new checks_1.Checks(this._octokit, this._config, githubContext);
         this._prService = new pr_1.PrService(this._octokit, this._config, githubContext);
     }
     check() {

@@ -13,8 +13,8 @@ export class ChangelogChecker {
   constructor(config: Configuration) {
     this._config = config
     this._octokit = new github.GitHub(config.githubToken)
-    this._checks = new Checks(this._octokit, this._config)
     const githubContext = github.context
+    this._checks = new Checks(this._octokit, this._config, githubContext)
     this._prService = new PrService(this._octokit, this._config, githubContext)
   }
 
