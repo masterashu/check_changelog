@@ -46,21 +46,36 @@ export class PrService {
   }
 
   async addCommentToPr(): Promise<void> {
-    this._octokit.issues.createComment({
-      ...github.context.repo,
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      issue_number: this.getPr().pull_request?.number ?? 0,
-      body: this._config.missingChangelogMessage
-    })
+    if (this._config.missingChangelogMessage.length !== 0) {
+      this._octokit.issues.createComment({
+        ...github.context.repo,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        issue_number: this.getPr().pull_request?.number ?? 0,
+        body: this._config.missingChangelogMessage
+      })
+    }
   }
 
   async addLabelToCurrentPr(): Promise<void> {
-    this._octokit.issues.addLabels({
-      ...github.context.repo,
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      issue_number: this.getPr().pull_request?.number ?? 0,
-      labels: [this._config.noChangelogLabel]
-    })
+    if (this._config.noChangelogLabel.length !== 0) {
+      this._octokit.issues.addLabels({
+        ...github.context.repo,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        issue_number: this.getPr().pull_request?.number ?? 0,
+        labels: [this._config.noChangelogLabel]
+      })
+    }
+  }
+
+  async removeLabelFromCurrentPr(): Promise<void> {
+    if (this._config.noChangelogLabel.length !== 0) {
+      this._octokit.issues.removeLabel({
+        ...github.context.repo,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        issue_number: this.getPr().pull_request?.number ?? 0,
+        name: this._config.noChangelogLabel
+      })
+    }
   }
 
   getPr(): WebhookPayload {

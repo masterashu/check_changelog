@@ -23711,17 +23711,31 @@ class PrService {
     addCommentToPr() {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            this._octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { 
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                issue_number: (_b = (_a = this.getPr().pull_request) === null || _a === void 0 ? void 0 : _a.number, (_b !== null && _b !== void 0 ? _b : 0)), body: this._config.missingChangelogMessage }));
+            if (this._config.missingChangelogMessage.length !== 0) {
+                this._octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { 
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    issue_number: (_b = (_a = this.getPr().pull_request) === null || _a === void 0 ? void 0 : _a.number, (_b !== null && _b !== void 0 ? _b : 0)), body: this._config.missingChangelogMessage }));
+            }
         });
     }
     addLabelToCurrentPr() {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            this._octokit.issues.addLabels(Object.assign(Object.assign({}, github.context.repo), { 
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                issue_number: (_b = (_a = this.getPr().pull_request) === null || _a === void 0 ? void 0 : _a.number, (_b !== null && _b !== void 0 ? _b : 0)), labels: [this._config.noChangelogLabel] }));
+            if (this._config.noChangelogLabel.length !== 0) {
+                this._octokit.issues.addLabels(Object.assign(Object.assign({}, github.context.repo), { 
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    issue_number: (_b = (_a = this.getPr().pull_request) === null || _a === void 0 ? void 0 : _a.number, (_b !== null && _b !== void 0 ? _b : 0)), labels: [this._config.noChangelogLabel] }));
+            }
+        });
+    }
+    removeLabelFromCurrentPr() {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this._config.noChangelogLabel.length !== 0) {
+                this._octokit.issues.removeLabel(Object.assign(Object.assign({}, github.context.repo), { 
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    issue_number: (_b = (_a = this.getPr().pull_request) === null || _a === void 0 ? void 0 : _a.number, (_b !== null && _b !== void 0 ? _b : 0)), name: this._config.noChangelogLabel }));
+            }
         });
     }
     getPr() {
@@ -25671,6 +25685,13 @@ class ChangelogChecker {
             else {
                 const result = yield this._prService.searchFile((_d = (_c = pr.pull_request) === null || _c === void 0 ? void 0 : _c.number, (_d !== null && _d !== void 0 ? _d : 0)));
                 status = !result ? checks_1.Status.MISSING_CHANGELOG : checks_1.Status.OK;
+                if (!result) {
+                    yield this._prService.addCommentToPr();
+                    yield this._prService.addLabelToCurrentPr();
+                }
+                else {
+                    yield this._prService.removeLabelFromCurrentPr();
+                }
             }
             this._checks.createStatus(pr, status);
             return status;

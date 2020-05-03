@@ -1,4 +1,4 @@
-name: Check Changelogs
+name: Missing Changelog
 description: A GitHub action that verifies if a pull request has changelogs.
 author: Ashutosh Chauhan
 

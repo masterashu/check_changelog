@@ -34,6 +34,12 @@ export class ChangelogChecker {
         pr.pull_request?.number ?? 0
       )
       status = !result ? Status.MISSING_CHANGELOG : Status.OK
+      if (!result) {
+        await this._prService.addCommentToPr()
+        await this._prService.addLabelToCurrentPr()
+      } else {
+        await this._prService.removeLabelFromCurrentPr()
+      }
     }
 
     this._checks.createStatus(pr, status)
