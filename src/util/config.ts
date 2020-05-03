@@ -15,7 +15,7 @@ export class Configuration {
     this.githubToken = githubToken
     this.changelogPattern = changelogPattern
     this.noChangelogLabel = noChangelogLabel
-    this.skipChangelogLabel = skipChangelogLabel
     this.missingChangelogMessage = missingChangelogMessage
+    this.skipChangelogLabel = skipChangelogLabel
   }
 }
