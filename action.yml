@@ -1,10 +1,32 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: Check Changelogs
+description: A GitHub action that verifies if a pull request has changelogs.
+author: Ashutosh Chauhan
+
 inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+  changelog:
+    description: A regex matching any changelog file (default to CHANGELOG.md)
+    required: true
+    default: CHANGELOG.md
+
+  missing_changelog_message: 
+    description: The Comment to be made when a changelog file is not provided
+    required: false
+    default: It seems you forgot to add a changelog to your PR. If your PR doesn't require a changelog add the label `skip-changelog`.
+
+  no_changelog_label:
+    description: Label to add if no changelogs are detected.
+    required: false
+    default: ''
+
+  skip_changelog_label:
+    description: Label to skip checking of changelogs.
+    required: false
+    default: 'skip-changelog-check'
+
+outputs:
+  has_changelog:
+    description: A boolean representing if the PR has changelogs
+
 runs:
   using: 'node12'
-  main: 'dist/index.js'
+  main: 'lib/index.js'

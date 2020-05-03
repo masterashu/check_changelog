@@ -1,16 +1,35 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import * as checker from './util/checker'
+import {readGithubToken} from './util/token'
+import {Configuration} from './util/config'
+import {Status} from './util/checks'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const changelogPattern: string = core.getInput('changelog', {
+      required: true
+    })
+    const missingChangelogMessage = core.getInput('missing_changelog_message')
+    const noChangelogLabel: string = core.getInput('no_changelog_label')
+    const skipChangelogLabel: string = core.getInput('skip_changelog_label')
+    const githubToken: string = readGithubToken()
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+    const config: Configuration = new Configuration(
+      changelogPattern,
+      noChangelogLabel,
+      skipChangelogLabel,
+      missingChangelogMessage,
+      githubToken
+    )
+    core.debug(`verifying existence of ${changelogPattern}`)
+    const changelogChecker: checker.ChangelogChecker = new checker.ChangelogChecker(
+      config
+    )
+    const status = await changelogChecker.check()
+    core.setOutput(
+      'has_changelog',
+      status === Status.OK || status === Status.MANUAL_SKIP
+    )
   } catch (error) {
     core.setFailed(error.message)
   }
