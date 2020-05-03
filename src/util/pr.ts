@@ -35,7 +35,14 @@ export class PrService {
 
   async getLabelsForCurrentPr(): Promise<string[]> {
     const pr = this.getPr()
-    return Promise.all(pr.labels.map(async (it: {name: string}) => it.name))
+    const labels: Octokit.Response<Octokit.IssuesListLabelsOnIssueResponse> = await this._octokit.issues.listLabelsOnIssue(
+      {
+        ...this._githubContext.repo,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        issue_number: pr.pull_request?.number ?? 0
+      }
+    )
+    return Promise.all(labels.data.map(async it => it.name))
   }
 
   async addCommentToPr(): Promise<void> {
@@ -57,8 +64,8 @@ export class PrService {
   }
 
   getPr(): WebhookPayload {
-    const pr = this._githubContext.payload.pull_request
-    if (pr) {
+    const pr = this._githubContext.payload
+    if (pr.pull_request) {
       return pr
     } else {
       throw new Error('Not a PR')

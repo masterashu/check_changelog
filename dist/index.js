@@ -23689,9 +23689,13 @@ class PrService {
         });
     }
     getLabelsForCurrentPr() {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const pr = this.getPr();
-            return Promise.all(pr.labels.map((it) => __awaiter(this, void 0, void 0, function* () { return it.name; })));
+            const labels = yield this._octokit.issues.listLabelsOnIssue(Object.assign(Object.assign({}, this._githubContext.repo), { 
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                issue_number: (_b = (_a = pr.pull_request) === null || _a === void 0 ? void 0 : _a.number, (_b !== null && _b !== void 0 ? _b : 0)) }));
+            return Promise.all(labels.data.map((it) => __awaiter(this, void 0, void 0, function* () { return it.name; })));
         });
     }
     addCommentToPr() {
@@ -23711,8 +23715,8 @@ class PrService {
         });
     }
     getPr() {
-        const pr = this._githubContext.payload.pull_request;
-        if (pr) {
+        const pr = this._githubContext.payload;
+        if (pr.pull_request) {
             return pr;
         }
         else {
@@ -25636,36 +25640,26 @@ const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 class ChangelogChecker {
     constructor(config) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         this._config = config;
         this._octokit = new github.GitHub(config.githubToken);
         this._checks = new checks_1.Checks(this._octokit, this._config);
         const githubContext = github.context;
-        core.debug((_a = github.context.payload.action, (_a !== null && _a !== void 0 ? _a : 'na')));
-        core.debug((_c = (_b = github.context.payload.issue) === null || _b === void 0 ? void 0 : _b.number.toString(), (_c !== null && _c !== void 0 ? _c : 'na')));
-        core.debug((_e = (_d = github.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.number.toString(), (_e !== null && _e !== void 0 ? _e : 'na')));
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        core.debug((_g = (_f = githubContext.payload.issue) === null || _f === void 0 ? void 0 : _f.html_url, (_g !== null && _g !== void 0 ? _g : 'na')));
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        core.debug((_j = (_h = githubContext.payload.pull_request) === null || _h === void 0 ? void 0 : _h.html_url, (_j !== null && _j !== void 0 ? _j : 'na')));
         this._prService = new pr_1.PrService(this._octokit, this._config, githubContext);
     }
     check() {
-        var _a, _b, _c, _d, _e, _f, _g, _h;
+        var _a, _b, _c, _d;
         return __awaiter(this, void 0, void 0, function* () {
             // Search existing labels check if we can skip checking changelog.
+            const pr = this._prService.getPr();
             let status;
             const labels = yield this._prService.getLabelsForCurrentPr();
             core.debug(labels.join(' + '));
-            const pr = this._prService.getPr();
-            core.debug((_b = (_a = pr) === null || _a === void 0 ? void 0 : _a.body, (_b !== null && _b !== void 0 ? _b : 'n/a')));
-            core.debug((_d = (_c = pr) === null || _c === void 0 ? void 0 : _c.number.toString(), (_d !== null && _d !== void 0 ? _d : 'n/a')));
-            if ((_f = (_e = this._config.skipChangelogLabel) === null || _e === void 0 ? void 0 : _e.length, (_f !== null && _f !== void 0 ? _f : 0)) !== 0 &&
+            if ((_b = (_a = this._config.skipChangelogLabel) === null || _a === void 0 ? void 0 : _a.length, (_b !== null && _b !== void 0 ? _b : 0)) !== 0 &&
                 labels.includes(this._config.skipChangelogLabel)) {
                 status = checks_1.Status.MANUAL_SKIP;
             }
             else {
-                const result = yield this._prService.searchFile((_h = (_g = pr.pull_request) === null || _g === void 0 ? void 0 : _g.number, (_h !== null && _h !== void 0 ? _h : 0)));
+                const result = yield this._prService.searchFile((_d = (_c = pr.pull_request) === null || _c === void 0 ? void 0 : _c.number, (_d !== null && _d !== void 0 ? _d : 0)));
                 status = !result ? checks_1.Status.MISSING_CHANGELOG : checks_1.Status.OK;
             }
             this._checks.createStatus(pr, status);
