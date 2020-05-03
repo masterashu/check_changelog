@@ -15,10 +15,13 @@ export class ChangelogChecker {
     this._octokit = new github.GitHub(config.githubToken)
     this._checks = new Checks(this._octokit, this._config)
     const githubContext = github.context
-    core.debug(githubContext.action)
-    core.debug(githubContext.repo.owner)
-    core.debug(githubContext.repo.repo)
-    core.debug(githubContext.payload.toString())
+    core.debug(github.context.payload.action ?? 'na')
+    core.debug(github.context.payload.issue?.number.toString() ?? 'na')
+    core.debug(github.context.payload.pull_request?.number.toString() ?? 'na')
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    core.debug(githubContext.payload.issue?.html_url ?? 'na')
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    core.debug(githubContext.payload.pull_request?.html_url ?? 'na')
     this._prService = new PrService(this._octokit, this._config, githubContext)
   }
 

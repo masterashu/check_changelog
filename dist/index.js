@@ -25636,14 +25636,18 @@ const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 class ChangelogChecker {
     constructor(config) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         this._config = config;
         this._octokit = new github.GitHub(config.githubToken);
         this._checks = new checks_1.Checks(this._octokit, this._config);
         const githubContext = github.context;
-        core.debug(githubContext.action);
-        core.debug(githubContext.repo.owner);
-        core.debug(githubContext.repo.repo);
-        core.debug(githubContext.payload.toString());
+        core.debug((_a = github.context.payload.action, (_a !== null && _a !== void 0 ? _a : 'na')));
+        core.debug((_c = (_b = github.context.payload.issue) === null || _b === void 0 ? void 0 : _b.number.toString(), (_c !== null && _c !== void 0 ? _c : 'na')));
+        core.debug((_e = (_d = github.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.number.toString(), (_e !== null && _e !== void 0 ? _e : 'na')));
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        core.debug((_g = (_f = githubContext.payload.issue) === null || _f === void 0 ? void 0 : _f.html_url, (_g !== null && _g !== void 0 ? _g : 'na')));
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        core.debug((_j = (_h = githubContext.payload.pull_request) === null || _h === void 0 ? void 0 : _h.html_url, (_j !== null && _j !== void 0 ? _j : 'na')));
         this._prService = new pr_1.PrService(this._octokit, this._config, githubContext);
     }
     check() {
