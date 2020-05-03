@@ -2,6 +2,7 @@ import * as github from '@actions/github'
 import {Configuration} from './config'
 import {PrService} from './pr'
 import {Status, Checks} from './checks'
+import * as core from '@actions/core'
 
 export class ChangelogChecker {
   private _octokit: github.GitHub
@@ -20,8 +21,10 @@ export class ChangelogChecker {
     // Search existing labels check if we can skip checking changelog.
     let status: Status
     const labels: string[] = await this._prService.getLabelsForCurrentPr()
+    core.debug(labels.join('\n'))
     const pr = this._prService.getPr()
-
+    core.debug(pr.pull_request?.body ?? 'n/a')
+    core.debug(pr.pull_request?.number.toString() ?? 'n/a')
     if (
       (this._config.skipChangelogLabel?.length ?? 0) !== 0 &&
       labels.includes(this._config.skipChangelogLabel)

@@ -26,6 +26,7 @@ async function run(): Promise<void> {
     const changelogChecker: checker.ChangelogChecker = new checker.ChangelogChecker(
       config
     )
+
     const status = await changelogChecker.check()
     core.setOutput(
       'has_changelog',
