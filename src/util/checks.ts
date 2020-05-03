@@ -1,8 +1,8 @@
 // The Checks to prevent merging.
-import { Configuration } from './config'
-import { Octokit } from '@octokit/rest'
+import {Configuration} from './config'
+import {Octokit} from '@octokit/rest'
 import * as github from '@actions/github'
-import { WebhookPayload } from '@actions/github/lib/interfaces'
+import {WebhookPayload} from '@actions/github/lib/interfaces'
 import * as core from '@actions/core'
 
 export class Checks {
@@ -69,6 +69,6 @@ export enum Conclusion {
 
 export enum Status {
   OK,
-  MISSING_CHANGELOG,  
+  MISSING_CHANGELOG,
   MANUAL_SKIP
 }
