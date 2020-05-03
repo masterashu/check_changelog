@@ -25637,9 +25637,14 @@ const github = __importStar(__webpack_require__(469));
 class ChangelogChecker {
     constructor(config) {
         this._config = config;
-        this._octokit = new github.GitHub(this._config.githubToken);
-        this._prService = new pr_1.PrService(this._octokit, config, github.context);
-        this._checks = new checks_1.Checks(this._octokit, config);
+        this._octokit = new github.GitHub(config.githubToken);
+        this._checks = new checks_1.Checks(this._octokit, this._config);
+        const githubContext = github.context;
+        core.debug(githubContext.action);
+        core.debug(githubContext.repo.owner);
+        core.debug(githubContext.repo.repo);
+        core.debug(githubContext.payload.toString());
+        this._prService = new pr_1.PrService(this._octokit, this._config, githubContext);
     }
     check() {
         var _a, _b, _c, _d, _e, _f, _g, _h;
@@ -25647,7 +25652,7 @@ class ChangelogChecker {
             // Search existing labels check if we can skip checking changelog.
             let status;
             const labels = yield this._prService.getLabelsForCurrentPr();
-            core.debug(labels.join('\n'));
+            core.debug(labels.join(' + '));
             const pr = this._prService.getPr();
             core.debug((_b = (_a = pr) === null || _a === void 0 ? void 0 : _a.body, (_b !== null && _b !== void 0 ? _b : 'n/a')));
             core.debug((_d = (_c = pr) === null || _c === void 0 ? void 0 : _c.number.toString(), (_d !== null && _d !== void 0 ? _d : 'n/a')));
