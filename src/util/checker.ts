@@ -22,7 +22,10 @@ export class ChangelogChecker {
     const labels: string[] = await this._prService.getLabelsForCurrentPr()
     const pr = this._prService.getPr()
 
-    if (labels.includes(this._config.skipChangelogLabel)) {
+    if (
+      (this._config.skipChangelogLabel?.length ?? 0) !== 0 &&
+      labels.includes(this._config.skipChangelogLabel)
+    ) {
       status = Status.MANUAL_SKIP
     } else {
       const result = this._prService.searchFile(pr.pull_request?.number ?? 0)
