@@ -1,8 +1,8 @@
-import * as github from '@actions/github'
 import {Configuration} from './config'
 import {PrService} from './pr'
 import {Status, Checks} from './checks'
 import * as core from '@actions/core'
+import * as github from '@actions/github'
 
 export class ChangelogChecker {
   private _octokit: github.GitHub
@@ -12,16 +12,21 @@ export class ChangelogChecker {
 
   constructor(config: Configuration) {
     this._config = config
-    this._octokit = new github.GitHub(this._config.githubToken)
-    this._prService = new PrService(this._octokit, config, github.context)
-    this._checks = new Checks(this._octokit, config)
+    this._octokit = new github.GitHub(config.githubToken)
+    this._checks = new Checks(this._octokit, this._config)
+    const githubContext = github.context
+    core.debug(githubContext.action)
+    core.debug(githubContext.repo.owner)
+    core.debug(githubContext.repo.repo)
+    core.debug(githubContext.payload.toString())
+    this._prService = new PrService(this._octokit, this._config, githubContext)
   }
 
   async check(): Promise<Status> {
     // Search existing labels check if we can skip checking changelog.
     let status: Status
     const labels: string[] = await this._prService.getLabelsForCurrentPr()
-    core.debug(labels.join('\n'))
+    core.debug(labels.join(' + '))
     const pr = this._prService.getPr()
     core.debug(pr?.body ?? 'n/a')
     core.debug(pr?.number.toString() ?? 'n/a')
