@@ -38,7 +38,7 @@ export class Checks {
     if (Status.MISSING_CHANGELOG === status) {
       return {
         title: this._config.missingChangelogMessage,
-        summary: `There is no file found matching the regex pattern \"${this._config.changelogPattern}\" in the PR.`
+        summary: `There is no file found matching the regex pattern "${this._config.changelogPattern}" in the PR.`
       }
     } else if (Status.MANUAL_SKIP) {
       return {
