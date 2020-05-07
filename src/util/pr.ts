@@ -35,30 +35,52 @@ export class PrService {
 
   async getLabelsForCurrentPr(): Promise<string[]> {
     const pr = this.getPr()
-    return Promise.all(pr.labels.map(async (it: {name: string}) => it.name))
+    const labels: Octokit.Response<Octokit.IssuesListLabelsOnIssueResponse> = await this._octokit.issues.listLabelsOnIssue(
+      {
+        ...this._githubContext.repo,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        issue_number: pr.pull_request?.number ?? 0
+      }
+    )
+    return Promise.all(labels.data.map(async it => it.name))
   }
 
-  addCommentToPr(): void {
-    this._octokit.issues.createComment({
-      ...github.context.repo,
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      issue_number: this.getPr().pull_request?.number ?? 0,
-      body: this._config.missingChangelogMessage
-    })
+  async addCommentToPr(): Promise<void> {
+    if (this._config.missingChangelogMessage.length !== 0) {
+      await this._octokit.issues.createComment({
+        ...github.context.repo,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        issue_number: this.getPr().pull_request?.number ?? 0,
+        body: this._config.missingChangelogMessage
+      })
+    }
   }
 
-  addLabelToCurrentPr(): void {
-    this._octokit.issues.addLabels({
-      ...github.context.repo,
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      issue_number: this.getPr().pull_request?.number ?? 0,
-      labels: [this._config.noChangelogLabel]
-    })
+  async addLabelToCurrentPr(): Promise<void> {
+    if (this._config.noChangelogLabel.length !== 0) {
+      await this._octokit.issues.addLabels({
+        ...github.context.repo,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        issue_number: this.getPr().pull_request?.number ?? 0,
+        labels: [this._config.noChangelogLabel]
+      })
+    }
+  }
+
+  async removeLabelFromCurrentPr(): Promise<void> {
+    if (this._config.noChangelogLabel.length !== 0) {
+      await this._octokit.issues.removeLabel({
+        ...github.context.repo,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        issue_number: this.getPr().pull_request?.number ?? 0,
+        name: this._config.noChangelogLabel
+      })
+    }
   }
 
   getPr(): WebhookPayload {
-    const pr = this._githubContext.payload.pull_request
-    if (pr) {
+    const pr = this._githubContext.payload
+    if (pr.pull_request) {
       return pr
     } else {
       throw new Error('Not a PR')

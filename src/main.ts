@@ -6,25 +6,27 @@ import {Status} from './util/checks'
 
 async function run(): Promise<void> {
   try {
+    core.debug('Changelog Checker')
+    const githubToken: string = readGithubToken()
     const changelogPattern: string = core.getInput('changelog', {
       required: true
     })
     const missingChangelogMessage = core.getInput('missing_changelog_message')
     const noChangelogLabel: string = core.getInput('no_changelog_label')
     const skipChangelogLabel: string = core.getInput('skip_changelog_label')
-    const githubToken: string = readGithubToken()
 
     const config: Configuration = new Configuration(
+      githubToken,
       changelogPattern,
       noChangelogLabel,
-      skipChangelogLabel,
       missingChangelogMessage,
-      githubToken
+      skipChangelogLabel
     )
-    core.debug(`verifying existence of ${changelogPattern}`)
+    core.debug(`verifying existence of "${changelogPattern}"`)
     const changelogChecker: checker.ChangelogChecker = new checker.ChangelogChecker(
       config
     )
+
     const status = await changelogChecker.check()
     core.setOutput(
       'has_changelog',
