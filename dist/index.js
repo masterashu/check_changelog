@@ -4470,7 +4470,8 @@ function run() {
             const missingChangelogMessage = core.getInput('missing_changelog_message');
             const noChangelogLabel = core.getInput('no_changelog_label');
             const skipChangelogLabel = core.getInput('skip_changelog_label');
-            const config = new config_1.Configuration(githubToken, changelogPattern, noChangelogLabel, missingChangelogMessage, skipChangelogLabel);
+            const matchPrNumber = core.getInput('verify_pr_number') === 'true';
+            const config = new config_1.Configuration(githubToken, changelogPattern, noChangelogLabel, missingChangelogMessage, skipChangelogLabel, matchPrNumber);
             core.debug(`verifying existence of "${changelogPattern}"`);
             const changelogChecker = new checker.ChangelogChecker(config);
             const status = yield changelogChecker.check();
@@ -23695,7 +23696,15 @@ class PrService {
             const files = yield this._octokit.pulls.listFiles(Object.assign(Object.assign({}, this._githubContext.repo), { 
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 pull_number: pr }));
-            return files.data.find((value) => regex.test(value.filename));
+            return files.data.find(function (value) {
+                if (regex.test(value.filename)) {
+                    const match = value.filename.match(regex);
+                    if (match && match.length > 1) {
+                        return parseInt(match[1]) === pr;
+                    }
+                }
+                return false;
+            });
         });
     }
     getLabelsForCurrentPr() {
@@ -25564,12 +25573,13 @@ module.exports.shellSync = (cmd, opts) => handleShell(module.exports.sync, cmd, 
 
 Object.defineProperty(exports, "__esModule", { value: true });
 class Configuration {
-    constructor(githubToken, changelogPattern, noChangelogLabel, missingChangelogMessage, skipChangelogLabel) {
+    constructor(githubToken, changelogPattern, noChangelogLabel, missingChangelogMessage, skipChangelogLabel, matchPrNumber) {
         this.githubToken = githubToken;
         this.changelogPattern = changelogPattern;
         this.noChangelogLabel = noChangelogLabel;
         this.missingChangelogMessage = missingChangelogMessage;
         this.skipChangelogLabel = skipChangelogLabel;
+        this.matchPrNumber = matchPrNumber;
     }
 }
 exports.Configuration = Configuration;

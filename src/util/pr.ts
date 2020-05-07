@@ -28,9 +28,15 @@ export class PrService {
       // eslint-disable-next-line @typescript-eslint/camelcase
       pull_number: pr
     })
-    return files.data.find((value: {filename: string}) =>
-      regex.test(value.filename)
-    )
+    return files.data.find(function(value: {filename: string}) {
+      if (regex.test(value.filename)) {
+        const match: RegExpMatchArray | null = value.filename.match(regex)
+        if (match && match.length > 1) {
+          return parseInt(match[1]) === pr
+        }
+      }
+      return false
+    })
   }
 
   async getLabelsForCurrentPr(): Promise<string[]> {

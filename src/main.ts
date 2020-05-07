@@ -14,13 +14,15 @@ async function run(): Promise<void> {
     const missingChangelogMessage = core.getInput('missing_changelog_message')
     const noChangelogLabel: string = core.getInput('no_changelog_label')
     const skipChangelogLabel: string = core.getInput('skip_changelog_label')
+    const matchPrNumber: boolean = core.getInput('verify_pr_number') === 'true'
 
     const config: Configuration = new Configuration(
       githubToken,
       changelogPattern,
       noChangelogLabel,
       missingChangelogMessage,
-      skipChangelogLabel
+      skipChangelogLabel,
+      matchPrNumber
     )
     core.debug(`verifying existence of "${changelogPattern}"`)
     const changelogChecker: checker.ChangelogChecker = new checker.ChangelogChecker(

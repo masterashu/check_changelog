@@ -11,7 +11,9 @@ inputs:
   missing_changelog_message: 
     description: The Comment to be made when a changelog file is not provided
     required: false
-    default: It seems you forgot to add a changelog to your PR. If your PR doesn't require a changelog add the label `skip-changelog`.
+    default: > 
+      It seems you forgot to add a changelog to your PR. 
+      If your PR doesn't require a changelog add the label `skip-changelog`.
 
   no_changelog_label:
     description: Label to add if no changelogs are detected.
@@ -22,6 +24,13 @@ inputs:
     description: Label to skip checking of changelogs.
     required: false
     default: 'skip-changelog-check'
+
+  verify_pr_number:
+    description: > 
+      Verify if a pull request no is matched in the changelog 
+      (Make sure you group the part of regex containing the PR number)
+    required: false
+    default: false
 
 outputs:
   has_changelog:
