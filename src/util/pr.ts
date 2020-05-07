@@ -47,7 +47,7 @@ export class PrService {
 
   async addCommentToPr(): Promise<void> {
     if (this._config.missingChangelogMessage.length !== 0) {
-      this._octokit.issues.createComment({
+      await this._octokit.issues.createComment({
         ...github.context.repo,
         // eslint-disable-next-line @typescript-eslint/camelcase
         issue_number: this.getPr().pull_request?.number ?? 0,
@@ -58,7 +58,7 @@ export class PrService {
 
   async addLabelToCurrentPr(): Promise<void> {
     if (this._config.noChangelogLabel.length !== 0) {
-      this._octokit.issues.addLabels({
+      await this._octokit.issues.addLabels({
         ...github.context.repo,
         // eslint-disable-next-line @typescript-eslint/camelcase
         issue_number: this.getPr().pull_request?.number ?? 0,
@@ -69,7 +69,7 @@ export class PrService {
 
   async removeLabelFromCurrentPr(): Promise<void> {
     if (this._config.noChangelogLabel.length !== 0) {
-      this._octokit.issues.removeLabel({
+      await this._octokit.issues.removeLabel({
         ...github.context.repo,
         // eslint-disable-next-line @typescript-eslint/camelcase
         issue_number: this.getPr().pull_request?.number ?? 0,

@@ -23712,7 +23712,7 @@ class PrService {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             if (this._config.missingChangelogMessage.length !== 0) {
-                this._octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { 
+                yield this._octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { 
                     // eslint-disable-next-line @typescript-eslint/camelcase
                     issue_number: (_b = (_a = this.getPr().pull_request) === null || _a === void 0 ? void 0 : _a.number, (_b !== null && _b !== void 0 ? _b : 0)), body: this._config.missingChangelogMessage }));
             }
@@ -23722,7 +23722,7 @@ class PrService {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             if (this._config.noChangelogLabel.length !== 0) {
-                this._octokit.issues.addLabels(Object.assign(Object.assign({}, github.context.repo), { 
+                yield this._octokit.issues.addLabels(Object.assign(Object.assign({}, github.context.repo), { 
                     // eslint-disable-next-line @typescript-eslint/camelcase
                     issue_number: (_b = (_a = this.getPr().pull_request) === null || _a === void 0 ? void 0 : _a.number, (_b !== null && _b !== void 0 ? _b : 0)), labels: [this._config.noChangelogLabel] }));
             }
@@ -23732,7 +23732,7 @@ class PrService {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             if (this._config.noChangelogLabel.length !== 0) {
-                this._octokit.issues.removeLabel(Object.assign(Object.assign({}, github.context.repo), { 
+                yield this._octokit.issues.removeLabel(Object.assign(Object.assign({}, github.context.repo), { 
                     // eslint-disable-next-line @typescript-eslint/camelcase
                     issue_number: (_b = (_a = this.getPr().pull_request) === null || _a === void 0 ? void 0 : _a.number, (_b !== null && _b !== void 0 ? _b : 0)), name: this._config.noChangelogLabel }));
             }
@@ -25676,13 +25676,16 @@ class ChangelogChecker {
             // Search existing labels check if we can skip checking changelog.
             const pr = this._prService.getPr();
             let status;
+            core.debug(`Check for skipLabel: ${this._config.skipChangelogLabel}`);
             const labels = yield this._prService.getLabelsForCurrentPr();
-            core.debug(labels.join(' + '));
+            core.debug(`All Labels: ${labels.join(', ')}`);
             if ((_b = (_a = this._config.skipChangelogLabel) === null || _a === void 0 ? void 0 : _a.length, (_b !== null && _b !== void 0 ? _b : 0)) !== 0 &&
                 labels.includes(this._config.skipChangelogLabel)) {
+                core.debug(`Skipped check due to ${this._config.skipChangelogLabel}.`);
                 status = checks_1.Status.MANUAL_SKIP;
             }
             else {
+                core.debug('checking for any files matching the changelog pattern.');
                 const result = yield this._prService.searchFile((_d = (_c = pr.pull_request) === null || _c === void 0 ? void 0 : _c.number, (_d !== null && _d !== void 0 ? _d : 0)));
                 status = !result ? checks_1.Status.MISSING_CHANGELOG : checks_1.Status.OK;
                 if (!result) {

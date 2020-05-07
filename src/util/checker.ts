@@ -22,14 +22,17 @@ export class ChangelogChecker {
     // Search existing labels check if we can skip checking changelog.
     const pr = this._prService.getPr()
     let status: Status
+    core.debug(`Check for skipLabel: ${this._config.skipChangelogLabel}`)
     const labels: string[] = await this._prService.getLabelsForCurrentPr()
-    core.debug(labels.join(' + '))
+    core.debug(`All Labels: ${labels.join(', ')}`)
     if (
       (this._config.skipChangelogLabel?.length ?? 0) !== 0 &&
       labels.includes(this._config.skipChangelogLabel)
     ) {
+      core.debug(`Skipped check due to ${this._config.skipChangelogLabel}.`)
       status = Status.MANUAL_SKIP
     } else {
+      core.debug('checking for any files matching the changelog pattern.')
       const result = await this._prService.searchFile(
         pr.pull_request?.number ?? 0
       )
