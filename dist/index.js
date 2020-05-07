@@ -5236,16 +5236,22 @@ class Checks {
         });
     }
     getOutput(status) {
-        if (Status.MISSING_CHANGELOG === status) {
+        if (Status.OK === status) {
+            return {
+                title: 'Everything looks good',
+                summary: 'You have added the changelog files as requested'
+            };
+        }
+        else if (Status.MISSING_CHANGELOG === status) {
             return {
                 title: this._config.missingChangelogMessage,
                 summary: `There is no file found matching the regex pattern "${this._config.changelogPattern}" in the PR.`
             };
         }
-        else if (Status.MANUAL_SKIP) {
+        else if (Status.MANUAL_SKIP === status) {
             return {
                 title: `Ignore chagelog by label ${this._config.noChangelogLabel}`,
-                summary: `The Changelog check is since ${this._config.noChangelogLabel} label is added.`
+                summary: `The Changelog check is skipped since ${this._config.noChangelogLabel} label is added.`
             };
         }
     }
